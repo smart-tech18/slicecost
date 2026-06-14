@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SliceCost — Reel 3</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@600;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#000; display:flex; justify-content:center; align-items:center; min-height:100vh; overflow:hidden; }
+  .reel { width:390px; height:692px; position:relative; overflow:hidden; }
+
+  .bg-video { position:absolute; inset:0; z-index:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity 1.4s ease; }
+  .bg-video.active { opacity:1; }
+  .bg-gradient { position:absolute; inset:0; z-index:1; background:linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.05) 30%, rgba(0,0,0,0.5) 60%, rgba(0,0,0,0.92) 100%); }
+
+  .slide { display:none; position:absolute; inset:0; z-index:3; flex-direction:column; justify-content:flex-end; padding:0 36px 96px; pointer-events:none; }
+  .slide.active { display:flex; }
+  .slide.active .bar { width:48px; }
+
+  .word-wrap { display:inline-block; overflow:hidden; vertical-align:bottom; }
+  .word { display:inline-block; transform:translateY(110%); transition:transform 0.52s cubic-bezier(0.16,1,0.3,1); }
+  .word.show { transform:translateY(0); }
+
+  .fade { opacity:0; transform:translateY(10px); transition:opacity 0.5s ease, transform 0.5s cubic-bezier(0.16,1,0.3,1); }
+  .fade.show { opacity:1; transform:translateY(0); }
+
+  .t-label { font-family:'Inter',sans-serif; font-weight:800; font-size:11px; color:#FF5C00; letter-spacing:3px; text-transform:uppercase; margin-bottom:10px; }
+  .t-hero  { font-family:'Anton',sans-serif; font-size:80px; line-height:0.95; color:#fff; letter-spacing:1px; text-transform:uppercase; text-shadow:0 4px 40px rgba(0,0,0,0.6); }
+  .t-hero-sm { font-family:'Anton',sans-serif; font-size:56px; line-height:1.0; color:#fff; letter-spacing:1px; text-transform:uppercase; text-shadow:0 4px 40px rgba(0,0,0,0.6); }
+  .t-sub  { font-family:'Inter',sans-serif; font-weight:600; font-size:16px; color:rgba(255,255,255,0.72); line-height:1.55; margin-top:10px; text-shadow:0 2px 12px rgba(0,0,0,0.9); }
+  .t-stat { font-family:'Anton',sans-serif; font-size:90px; line-height:1; color:#FF3B30; text-shadow:0 0 60px rgba(255,59,48,0.4), 0 4px 30px rgba(0,0,0,0.9); }
+  .accent { color:#FF5C00; }
+  .bar { width:0; height:3px; background:#FF5C00; border-radius:2px; margin-top:14px; transition:width 0.6s cubic-bezier(0.16,1,0.3,1) 0.15s; }
+
+  /* Founder tag top */
+  .founder-tag { position:absolute; top:24px; left:24px; z-index:4; display:flex; align-items:center; gap:8px; background:rgba(0,0,0,0.5); border:1px solid rgba(255,92,0,0.55); border-radius:30px; padding:7px 16px; opacity:0; transform:translateY(-8px); transition:opacity 0.5s ease, transform 0.5s cubic-bezier(0.16,1,0.3,1); backdrop-filter:blur(6px); }
+  .founder-tag.show { opacity:1; transform:translateY(0); }
+  .founder-tag span { font-family:'Inter',sans-serif; font-weight:800; font-size:11px; color:#FF5C00; letter-spacing:2px; text-transform:uppercase; }
+
+  .logo-screen { position:absolute; inset:0; z-index:6; display:flex; flex-direction:column; justify-content:center; align-items:center; opacity:0; pointer-events:none; transition:opacity 0.7s ease; }
+  .logo-screen.visible { opacity:1; background:rgba(0,0,0,0.82); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); pointer-events:all; }
+  .logo-wrap { display:flex; flex-direction:column; align-items:center; gap:16px; transform:scale(2.6); opacity:0; transition:transform 1s cubic-bezier(0.16,1,0.3,1), opacity 0.6s ease; }
+  .logo-screen.visible .logo-wrap { transform:scale(1); opacity:1; }
+  .logo-wrap img { width:80px; height:80px; border-radius:20px; box-shadow:0 0 40px rgba(255,92,0,0.3); }
+  .logo-name { font-family:'Anton',sans-serif; font-size:46px; color:#fff; letter-spacing:5px; }
+  .logo-dot { color:#FF5C00; }
+  .logo-tag-line { font-family:'Inter',sans-serif; font-weight:600; font-size:12px; color:rgba(255,255,255,0.45); letter-spacing:3px; text-transform:uppercase; }
+
+  .replay-btn { position:absolute; top:18px; right:18px; z-index:10; background:rgba(0,0,0,0.5); border:1px solid rgba(255,92,0,0.6); color:#FF5C00; padding:7px 16px; border-radius:20px; font-family:'Inter',sans-serif; font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; cursor:pointer; opacity:0; pointer-events:none; transition:opacity 0.3s; }
+  .replay-btn.visible { opacity:1; pointer-events:all; }
+  .progress-bar { position:absolute; bottom:0; left:0; z-index:10; height:2px; width:0%; background:linear-gradient(90deg,#FF5C00,#FF9500); transition:width linear; }
+</style>
+</head>
+<body>
+<div class="reel">
+  <video class="bg-video active" id="vid-pizza" src="https://base44.app/api/apps/6a2863e67f8342fff155be60/files/mp/public/6a2863e67f8342fff155be60/7f3d48cce_ambiance1.mp4" autoplay muted loop playsinline preload="auto"></video>
+  <video class="bg-video" id="vid-stressed" src="https://base44.app/api/apps/6a2863e67f8342fff155be60/files/mp/public/6a2863e67f8342fff155be60/7f3d48cce_ambiance1.mp4" autoplay muted loop playsinline preload="auto"></video>
+  <video class="bg-video" id="vid-chef" src="https://base44.app/api/apps/6a2863e67f8342fff155be60/files/mp/public/6a2863e67f8342fff155be60/7f3d48cce_ambiance1.mp4" autoplay muted loop playsinline preload="auto"></video>
+  <div class="bg-gradient"></div>
+
+  <div class="founder-tag" id="founderTag"><span>🍕 Pizza owner — real story</span></div>
+
+  <!-- S1 -->
+  <div class="slide" id="s1">
+    <div class="t-label fade" id="w1a">My story</div>
+    <div class="t-hero">
+      <div><span class="word-wrap"><span class="word" id="w1">I run</span></span></div>
+      <div><span class="word-wrap"><span class="word" id="w2">a pizzeria.</span></span></div>
+    </div>
+    <div class="bar"></div>
+  </div>
+
+  <!-- S2 -->
+  <div class="slide" id="s2">
+    <div class="t-hero-sm">
+      <div><span class="word-wrap"><span class="word" id="w3">I needed</span></span></div>
+      <div><span class="word-wrap"><span class="word" id="w4">software to</span></span></div>
+      <div><span class="word-wrap"><span class="word accent" id="w5">track my costs.</span></span></div>
+    </div>
+    <div class="bar"></div>
+  </div>
+
+  <!-- S3 -->
+  <div class="slide" id="s3">
+    <div class="t-hero-sm">
+      <div><span class="word-wrap"><span class="word" id="w6">Suppliers were</span></span></div>
+      <div><span class="word-wrap"><span class="word accent" id="w7">raising prices</span></span></div>
+    </div>
+    <div class="t-sub fade" id="w8">Week to week. And I had no idea.</div>
+    <div class="bar"></div>
+  </div>
+
+  <!-- S4 -->
+  <div class="slide" id="s4">
+    <div class="t-hero-sm">
+      <div><span class="word-wrap"><span class="word" id="w9">Every app I found</span></span></div>
+      <div><span class="word-wrap"><span class="word" id="w10">was</span></span></div>
+    </div>
+    <div class="t-stat"><span class="word-wrap"><span class="word" id="w11">$300+</span></span></div>
+    <div class="t-sub fade" id="w12">Or built for someone else entirely.</div>
+  </div>
+
+  <!-- S5 -->
+  <div class="slide" id="s5">
+    <div class="t-hero-sm">
+      <div><span class="word-wrap"><span class="word" id="w13">That's when</span></span></div>
+      <div><span class="word-wrap"><span class="word accent" id="w14">SliceCost</span></span></div>
+      <div><span class="word-wrap"><span class="word" id="w15b">was born.</span></span></div>
+    </div>
+    <div class="t-sub fade" id="w15">The app I always needed. Finally built.</div>
+    <div class="bar"></div>
+  </div>
+
+  <!-- S6 -->
+  <div class="slide" id="s6">
+    <div class="t-label fade" id="w16a">Introducing</div>
+    <div class="t-hero">
+      <div><span class="word-wrap"><span class="word accent" id="w16">SliceCost</span></span></div>
+    </div>
+    <div class="t-sub fade" id="w17">Scan invoices. Track price changes.<br>Know your real margins.</div>
+    <div class="bar"></div>
+  </div>
+
+  <!-- S7 CTA -->
+  <div class="slide" id="s7">
+    <div class="t-hero-sm">
+      <div><span class="word-wrap"><span class="word" id="w18">Built by an</span></span></div>
+      <div><span class="word-wrap"><span class="word accent" id="w19">owner,</span></span></div>
+      <div><span class="word-wrap"><span class="word" id="w20">for owners.</span></span></div>
+    </div>
+    <div class="t-sub fade" id="w21" style="margin-top:14px">Founding members: <span style="color:#FF5C00">$19/mo 🔒</span></div>
+    <div class="t-sub fade" id="w22" style="margin-top:6px; font-size:14px; opacity:0.7">🔗 Join the waitlist — link in bio</div>
+  </div>
+
+  <div class="logo-screen" id="logoScreen">
+    <div class="logo-wrap">
+      <img src="https://media.base44.com/images/public/6a2863e67f8342fff155be60/5d7dca8e8_generated_image.png" alt="SliceCost">
+      <div class="logo-name">Slice<span class="logo-dot">Cost</span></div>
+      <div class="logo-tag-line">Built by owners. For owners.</div>
+    </div>
+  </div>
+  <button class="replay-btn" id="replayBtn" onclick="startAnimation()">↺ Replay</button>
+  <div class="progress-bar" id="progress"></div>
+</div>
+<script>
+const TOTAL = 22000;
+const BG = { pizza:'vid-pizza', stressed:'vid-stressed', chef:'vid-chef' };
+const timeline = [
+  [0,    'slide','s1'],
+  [100,  'show', 'founderTag'],
+  [300,  'show', 'w1a'],
+  [700,  'show', 'w1'],
+  [1050, 'show', 'w2'],
+
+  [2500, 'slide','s2'],
+  [2700, 'show', 'w3'],
+  [3050, 'show', 'w4'],
+  [3400, 'show', 'w5'],
+
+  [4900, 'slide','s3'],
+  [4900, 'bg',   'stressed'],
+  [5100, 'show', 'w6'],
+  [5500, 'show', 'w7'],
+  [6000, 'show', 'w8'],
+
+  [7500, 'slide','s4'],
+  [7700, 'show', 'w9'],
+  [8100, 'show', 'w10'],
+  [8600, 'show', 'w11'],
+  [9200, 'show', 'w12'],
+
+  [10700,'slide','s5'],
+  [10700,'bg',   'chef'],
+  [10900,'show', 'w13'],
+  [11300,'show', 'w14'],
+  [11650,'show', 'w15b'],
+  [12100,'show', 'w15'],
+
+  [13200,'slide','s6'],
+  [13400,'show', 'w16a'],
+  [13800,'show', 'w16'],
+  [14400,'show', 'w17'],
+
+  [15900,'slide','s7'],
+  [16100,'show', 'w18'],
+  [16450,'show', 'w19'],
+  [16800,'show', 'w20'],
+  [17350,'show', 'w21'],
+  [17900,'show', 'w22'],
+
+  [19500,'logo', null],
+  [22000,'done', null],
+];
+let timers = [];
+function clearAll() {
+  timers.forEach(t => clearTimeout(t)); timers = [];
+  document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.word,.fade').forEach(w => w.classList.remove('show'));
+  document.getElementById('founderTag').classList.remove('show');
+  document.getElementById('logoScreen').classList.remove('visible');
+  document.getElementById('replayBtn').classList.remove('visible');
+  Object.values(BG).forEach(id => document.getElementById(id).classList.remove('active'));
+  document.getElementById('vid-pizza').classList.add('active');
+  const bar = document.getElementById('progress');
+  bar.style.transition = 'none'; bar.style.width = '0%';
+}
+function startAnimation() {
+  clearAll();
+  setTimeout(() => { const bar = document.getElementById('progress'); bar.style.transition = `width ${TOTAL}ms linear`; bar.style.width = '100%'; }, 50);
+  timeline.forEach(([time, action, target]) => {
+    timers.push(setTimeout(() => {
+      if (action === 'show') document.getElementById(target)?.classList.add('show');
+      else if (action === 'slide') { document.querySelectorAll('.slide').forEach(s => s.classList.remove('active')); document.getElementById(target)?.classList.add('active'); }
+      else if (action === 'bg') { Object.values(BG).forEach(id => document.getElementById(id).classList.remove('active')); document.getElementById(BG[target])?.classList.add('active'); }
+      else if (action === 'logo') { document.querySelectorAll('.slide').forEach(s => s.classList.remove('active')); document.getElementById('logoScreen').classList.add('visible'); }
+      else if (action === 'done') document.getElementById('replayBtn').classList.add('visible');
+    }, time));
+  });
+}
+startAnimation();
+
+// iOS video autoplay fix — trigger play on first touch
+function iosVideoFix() {
+  document.querySelectorAll('.bg-video').forEach(v => {
+    v.muted = true;
+    v.play().catch(() => {});
+  });
+  document.removeEventListener('touchstart', iosVideoFix);
+  document.removeEventListener('click', iosVideoFix);
+}
+document.addEventListener('touchstart', iosVideoFix, { once: true });
+document.addEventListener('click', iosVideoFix, { once: true });
+// Also try immediately on load
+window.addEventListener('load', () => {
+  document.querySelectorAll('.bg-video').forEach(v => {
+    v.muted = true;
+    v.load();
+    v.play().catch(() => {});
+  });
+});
+
+</script>
+</body>
+</html>
