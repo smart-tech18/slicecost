@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SliceCost — Reel 1</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@600;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#000; display:flex; justify-content:center; align-items:center; min-height:100vh; overflow:hidden; }
+
+  .reel { width:390px; height:692px; position:relative; overflow:hidden; }
+
+  .bg-video { position:absolute; inset:0; z-index:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity 1.4s ease; }
+  .bg-video.active { opacity:1; }
+  .bg-gradient { position:absolute; inset:0; z-index:1; background:linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.05) 30%, rgba(0,0,0,0.5) 60%, rgba(0,0,0,0.92) 100%); }
+
+  /* Slides */
+  .slide { display:none; position:absolute; inset:0; z-index:3; flex-direction:column; justify-content:flex-end; padding:0 36px 96px; pointer-events:none; }
+  .slide.active { display:flex; }
+  .slide.active .bar { width:48px; }
+
+  /* Word clip-reveal — the modern way */
+  .word-wrap { display:inline-block; overflow:hidden; vertical-align:bottom; }
+  .word {
+    display:inline-block;
+    transform:translateY(110%);
+    transition:transform 0.52s cubic-bezier(0.16,1,0.3,1);
+  }
+  .word.show { transform:translateY(0); }
+
+  /* Elements that fade in rather than clip (labels, subs, bars) */
+  .fade {
+    opacity:0;
+    transform:translateY(10px);
+    transition:opacity 0.5s ease, transform 0.5s cubic-bezier(0.16,1,0.3,1);
+  }
+  .fade.show { opacity:1; transform:translateY(0); }
+
+  /* Typography */
+  .t-label { font-family:'Inter',sans-serif; font-weight:800; font-size:11px; color:#FF5C00; letter-spacing:3px; text-transform:uppercase; margin-bottom:10px; }
+  .t-hero  { font-family:'Anton',sans-serif; font-size:80px; line-height:0.95; color:#fff; letter-spacing:1px; text-transform:uppercase; text-shadow:0 4px 40px rgba(0,0,0,0.6); }
+  .t-hero-sm { font-family:'Anton',sans-serif; font-size:56px; line-height:1.0; color:#fff; letter-spacing:1px; text-transform:uppercase; text-shadow:0 4px 40px rgba(0,0,0,0.6); }
+  .t-hero-xs { font-family:'Anton',sans-serif; font-size:44px; line-height:1.0; color:#fff; letter-spacing:1px; text-transform:uppercase; text-shadow:0 4px 40px rgba(0,0,0,0.6); }
+  .t-sub  { font-family:'Inter',sans-serif; font-weight:600; font-size:16px; color:rgba(255,255,255,0.72); line-height:1.55; margin-top:10px; text-shadow:0 2px 12px rgba(0,0,0,0.9); }
+  .t-stat { font-family:'Anton',sans-serif; font-size:108px; line-height:1; color:#FF5C00; text-shadow:0 0 60px rgba(255,92,0,0.4), 0 4px 30px rgba(0,0,0,0.9); }
+  .accent { color:#FF5C00; }
+
+  .bar { width:0; height:3px; background:#FF5C00; border-radius:2px; margin-top:14px; transition:width 0.6s cubic-bezier(0.16,1,0.3,1) 0.15s; }
+
+  /* CTA pill — fades in as a unit AFTER its text words */
+  .cta-box {
+    border:1.5px solid rgba(255,92,0,0.7);
+    border-radius:12px;
+    padding:14px 20px;
+    margin-top:14px;
+    background:rgba(255,92,0,0.1);
+    opacity:0;
+    transform:translateY(12px);
+    transition:opacity 0.5s ease, transform 0.5s cubic-bezier(0.16,1,0.3,1);
+  }
+  .cta-box.show { opacity:1; transform:translateY(0); }
+  .cta-box .t-hero-sm { color:#FF5C00; font-size:50px; }
+  .cta-box .t-sub { color:rgba(255,92,0,0.8); font-size:12px; letter-spacing:2px; text-transform:uppercase; font-weight:800; margin-top:4px; }
+
+  /* Logo end screen */
+  .logo-screen { position:absolute; inset:0; z-index:6; display:flex; flex-direction:column; justify-content:center; align-items:center; opacity:0; pointer-events:none; transition:opacity 0.7s ease; }
+  .logo-screen.visible { opacity:1; background:rgba(0,0,0,0.82); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); pointer-events:all; }
+  .logo-wrap { display:flex; flex-direction:column; align-items:center; gap:16px; transform:scale(2.6); opacity:0; transition:transform 1s cubic-bezier(0.16,1,0.3,1), opacity 0.6s ease; }
+  .logo-screen.visible .logo-wrap { transform:scale(1); opacity:1; }
+  .logo-wrap img { width:80px; height:80px; border-radius:20px; box-shadow:0 0 40px rgba(255,92,0,0.3); }
+  .logo-name { font-family:'Anton',sans-serif; font-size:46px; color:#fff; letter-spacing:5px; }
+  .logo-dot { color:#FF5C00; }
+  .logo-tag { font-family:'Inter',sans-serif; font-weight:600; font-size:12px; color:rgba(255,255,255,0.45); letter-spacing:3px; text-transform:uppercase; }
+
+  .replay-btn { position:absolute; top:18px; right:18px; z-index:10; background:rgba(0,0,0,0.5); border:1px solid rgba(255,92,0,0.6); color:#FF5C00; padding:7px 16px; border-radius:20px; font-family:'Inter',sans-serif; font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; cursor:pointer; opacity:0; pointer-events:none; transition:opacity 0.3s; }
+  .replay-btn.visible { opacity:1; pointer-events:all; }
+  .progress-bar { position:absolute; bottom:0; left:0; z-index:10; height:2px; width:0%; background:linear-gradient(90deg,#FF5C00,#FF9500); transition:width linear; }
+</style>
+</head>
+<body>
+<div class="reel">
+  <video class="bg-video active" id="vid-pizza" src="pizza.mp4" autoplay muted loop playsinline preload="auto"></video>
+  <video class="bg-video" id="vid-invoices" src="invoices.mp4" autoplay muted loop playsinline preload="auto"></video>
+  <div class="bg-gradient"></div>
+
+  <!-- S1 -->
+  <div class="slide" id="s1">
+    <div class="t-label fade" id="w1a">Food cost alert</div>
+    <div class="t-hero">
+      <div><span class="word-wrap"><span class="word" id="w1">You raised</span></span></div>
+      <div><span class="word-wrap"><span class="word" id="w2">your prices.</span></span></div>
+    </div>
+    <div class="bar"></div>
+  </div>
+
+  <!-- S2 -->
+  <div class="slide" id="s2">
+    <div class="t-hero">
+      <div><span class="word-wrap"><span class="word" id="w3">But did</span></span></div>
+      <div><span class="word-wrap"><span class="word" id="w4">you check</span></span></div>
+      <div><span class="word-wrap"><span class="word" id="w5">your costs?</span></span></div>
+    </div>
+  </div>
+
+  <!-- S3 -->
+  <div class="slide" id="s3">
+    <div class="t-hero-xs">
+      <div><span class="word-wrap"><span class="word" id="w6">Mozzarella is up</span></span></div>
+      <div><span class="word-wrap"><span class="word accent" id="w7">18% this year.</span></span></div>
+    </div>
+    <div class="t-sub fade" id="w8" style="margin-top:10px">Your ingredient costs are climbing.</div>
+    <div class="bar"></div>
+  </div>
+
+  <!-- S4 -->
+  <div class="slide" id="s4">
+    <div class="t-hero">
+      <div><span class="word-wrap"><span class="word" id="w9">Your menu</span></span></div>
+      <div><span class="word-wrap"><span class="word" id="w10">price?</span></span></div>
+    </div>
+    <div class="t-hero" style="margin-top:6px">
+      <div><span class="word-wrap"><span class="word accent" id="w11">Still the same.</span></span></div>
+    </div>
+  </div>
+
+  <!-- S5 -->
+  <div class="slide" id="s5">
+    <div class="t-hero-sm">
+      <div><span class="word-wrap"><span class="word" id="w12">That's money</span></span></div>
+      <div><span class="word-wrap"><span class="word accent" id="w13">leaving quietly</span></span></div>
+      <div><span class="word-wrap"><span class="word" id="w14">every single day.</span></span></div>
+    </div>
+  </div>
+
+  <!-- S6 -->
+  <div class="slide" id="s6">
+    <div class="t-sub fade" id="w15">The real cost per year?</div>
+    <div class="t-stat"><span class="word-wrap"><span class="word" id="w16">$4,200</span></span></div>
+    <div class="t-sub fade" id="w17" style="margin-top:8px">One pizza. Quietly bleeding.</div>
+    <div class="bar"></div>
+  </div>
+
+  <!-- S7 -->
+  <div class="slide" id="s7">
+    <div class="t-hero">
+      <div><span class="word-wrap"><span class="word accent" id="w18">SliceCost</span></span></div>
+      <div><span class="word-wrap"><span class="word" id="w19">catches this.</span></span></div>
+    </div>
+    <div class="t-sub fade" id="w20" style="margin-top:12px">Automatically. In real time.</div>
+    <div class="bar"></div>
+  </div>
+
+  <!-- S8 CTA -->
+  <div class="slide" id="s8">
+    <div class="t-hero-sm">
+      <div><span class="word-wrap"><span class="word" id="w21">Founding</span></span></div>
+      <div><span class="word-wrap"><span class="word" id="w22">members</span></span></div>
+    </div>
+    <div class="cta-box" id="ctaBox">
+      <div class="t-hero-sm">$19 / month</div>
+      <div class="t-sub">🔒 Price locked forever</div>
+    </div>
+    <div class="t-sub fade" id="w25" style="margin-top:14px; font-size:14px">🔗 Link in bio to join the waitlist</div>
+  </div>
+
+  <!-- Logo -->
+  <div class="logo-screen" id="logoScreen">
+    <div class="logo-wrap">
+      <img src="https://media.base44.com/images/public/6a2863e67f8342fff155be60/5d7dca8e8_generated_image.png" alt="SliceCost">
+      <div class="logo-name">Slice<span class="logo-dot">Cost</span></div>
+      <div class="logo-tag">Know your margins.</div>
+    </div>
+  </div>
+
+  <button class="replay-btn" id="replayBtn" onclick="startAnimation()">↺ Replay</button>
+  <div class="progress-bar" id="progress"></div>
+</div>
+<script>
+const TOTAL = 20000;
+const timeline = [
+  [0,    'slide','s1'],
+  [200,  'show', 'w1a'],
+  [500,  'show', 'w1'],
+  [850,  'show', 'w2'],
+
+  [2100, 'slide','s2'],
+  [2300, 'show', 'w3'],
+  [2620, 'show', 'w4'],
+  [2940, 'show', 'w5'],
+
+  [4100, 'slide','s3'],
+  [4300, 'show', 'w6'],
+  [4750, 'show', 'w7'],
+  [5200, 'show', 'w8'],
+
+  [6400, 'slide','s4'],
+  [6600, 'show', 'w9'],
+  [7000, 'show', 'w10'],
+  [7600, 'show', 'w11'],
+
+  [8900, 'slide','s5'],
+  [9100, 'show', 'w12'],
+  [9450, 'show', 'w13'],
+  [9800, 'show', 'w14'],
+
+  [11100,'slide','s6'],
+  [11100,'bg',   'invoices'],
+  [11300,'show', 'w15'],
+  [11800,'show', 'w16'],
+  [12400,'show', 'w17'],
+
+  [13600,'slide','s7'],
+  [13800,'show', 'w18'],
+  [14200,'show', 'w19'],
+  [14700,'show', 'w20'],
+
+  [15900,'slide','s8'],
+  [16100,'show', 'w21'],
+  [16450,'show', 'w22'],
+  [17000,'show', 'ctaBox'],
+  [17600,'show', 'w25'],
+
+  [19000,'logo', null],
+  [20000,'done', null],
+];
+
+let timers = [];
+function clearAll() {
+  timers.forEach(t => clearTimeout(t)); timers = [];
+  document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.word,.fade').forEach(w => w.classList.remove('show'));
+  document.getElementById('ctaBox').classList.remove('show');
+  document.getElementById('logoScreen').classList.remove('visible');
+  document.getElementById('replayBtn').classList.remove('visible');
+  document.getElementById('vid-pizza').classList.add('active');
+  document.getElementById('vid-invoices').classList.remove('active');
+  const bar = document.getElementById('progress');
+  bar.style.transition = 'none'; bar.style.width = '0%';
+}
+function startAnimation() {
+  clearAll();
+  setTimeout(() => {
+    const bar = document.getElementById('progress');
+    bar.style.transition = `width ${TOTAL}ms linear`;
+    bar.style.width = '100%';
+  }, 50);
+  timeline.forEach(([time, action, target]) => {
+    timers.push(setTimeout(() => {
+      if (action === 'show') document.getElementById(target)?.classList.add('show');
+      else if (action === 'slide') { document.querySelectorAll('.slide').forEach(s => s.classList.remove('active')); document.getElementById(target)?.classList.add('active'); }
+      else if (action === 'bg') { document.getElementById('vid-pizza').classList.toggle('active', target==='pizza'); document.getElementById('vid-invoices').classList.toggle('active', target==='invoices'); }
+      else if (action === 'logo') { document.querySelectorAll('.slide').forEach(s => s.classList.remove('active')); document.getElementById('logoScreen').classList.add('visible'); }
+      else if (action === 'done') document.getElementById('replayBtn').classList.add('visible');
+    }, time));
+  });
+}
+startAnimation();
+
+// iOS video autoplay fix — trigger play on first touch
+function iosVideoFix() {
+  document.querySelectorAll('.bg-video').forEach(v => {
+    v.muted = true;
+    v.play().catch(() => {});
+  });
+  document.removeEventListener('touchstart', iosVideoFix);
+  document.removeEventListener('click', iosVideoFix);
+}
+document.addEventListener('touchstart', iosVideoFix, { once: true });
+document.addEventListener('click', iosVideoFix, { once: true });
+// Also try immediately on load
+window.addEventListener('load', () => {
+  document.querySelectorAll('.bg-video').forEach(v => {
+    v.muted = true;
+    v.load();
+    v.play().catch(() => {});
+  });
+});
+
+</script>
+</body>
+</html>
