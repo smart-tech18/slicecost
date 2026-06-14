@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SliceCost — Reel 4</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@600;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#000; display:flex; justify-content:center; align-items:center; min-height:100vh; overflow:hidden; }
+  .reel { width:390px; height:692px; position:relative; overflow:hidden; }
+
+  .bg-video { position:absolute; inset:0; z-index:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity 1.4s ease; }
+  .bg-video.active { opacity:1; }
+  .bg-gradient { position:absolute; inset:0; z-index:1; background:linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.1) 30%, rgba(0,0,0,0.55) 60%, rgba(0,0,0,0.93) 100%); }
+
+  .slide { display:none; position:absolute; inset:0; z-index:3; flex-direction:column; justify-content:flex-end; padding:0 36px 96px; pointer-events:none; }
+  .slide.active { display:flex; }
+  .slide.active .bar { width:48px; }
+
+  .word-wrap { display:inline-block; overflow:hidden; vertical-align:bottom; }
+  .word { display:inline-block; transform:translateY(110%); transition:transform 0.52s cubic-bezier(0.16,1,0.3,1); }
+  .word.show { transform:translateY(0); }
+
+  .fade { opacity:0; transform:translateY(10px); transition:opacity 0.5s ease, transform 0.5s cubic-bezier(0.16,1,0.3,1); }
+  .fade.show { opacity:1; transform:translateY(0); }
+
+  .t-label { font-family:'Inter',sans-serif; font-weight:800; font-size:11px; color:#FF5C00; letter-spacing:3px; text-transform:uppercase; margin-bottom:10px; }
+  .t-hero  { font-family:'Anton',sans-serif; font-size:78px; line-height:0.95; color:#fff; letter-spacing:1px; text-transform:uppercase; text-shadow:0 4px 40px rgba(0,0,0,0.6); }
+  .t-hero-sm { font-family:'Anton',sans-serif; font-size:58px; line-height:1.0; color:#fff; letter-spacing:1px; text-transform:uppercase; text-shadow:0 4px 40px rgba(0,0,0,0.6); }
+  .t-sub  { font-family:'Inter',sans-serif; font-weight:600; font-size:16px; color:rgba(255,255,255,0.72); line-height:1.55; margin-top:10px; text-shadow:0 2px 12px rgba(0,0,0,0.9); }
+  .t-stat { font-family:'Anton',sans-serif; font-size:96px; line-height:1; color:#FF3B30; text-shadow:0 0 60px rgba(255,59,48,0.4), 0 4px 30px rgba(0,0,0,0.9); }
+  .t-stat-green { font-family:'Anton',sans-serif; font-size:96px; line-height:1; color:#34C759; text-shadow:0 0 60px rgba(52,199,89,0.4), 0 4px 30px rgba(0,0,0,0.9); }
+  .accent { color:#FF5C00; }
+  .green { color:#34C759; }
+  .bar { width:0; height:3px; background:#FF5C00; border-radius:2px; margin-top:14px; transition:width 0.6s cubic-bezier(0.16,1,0.3,1) 0.15s; }
+
+  /* comparison card */
+  .compare-card { background:rgba(0,0,0,0.55); border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:18px 20px; margin-top:14px; backdrop-filter:blur(8px); opacity:0; transform:translateY(12px); transition:opacity 0.5s ease, transform 0.5s cubic-bezier(0.16,1,0.3,1); }
+  .compare-card.show { opacity:1; transform:translateY(0); }
+  .compare-row { display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.08); }
+  .compare-row:last-child { border-bottom:none; }
+  .compare-row .label { font-family:'Inter',sans-serif; font-size:13px; font-weight:600; color:rgba(255,255,255,0.6); }
+  .compare-row .bad  { font-family:'Inter',sans-serif; font-size:13px; font-weight:800; color:#FF3B30; }
+  .compare-row .good { font-family:'Inter',sans-serif; font-size:13px; font-weight:800; color:#34C759; }
+
+  .logo-screen { position:absolute; inset:0; z-index:6; display:flex; flex-direction:column; justify-content:center; align-items:center; opacity:0; pointer-events:none; transition:opacity 0.7s ease; }
+  .logo-screen.visible { opacity:1; background:rgba(0,0,0,0.82); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); pointer-events:all; }
+  .logo-wrap { display:flex; flex-direction:column; align-items:center; gap:16px; transform:scale(2.6); opacity:0; transition:transform 1s cubic-bezier(0.16,1,0.3,1), opacity 0.6s ease; }
+  .logo-screen.visible .logo-wrap { transform:scale(1); opacity:1; }
+  .logo-wrap img { width:80px; height:80px; border-radius:20px; box-shadow:0 0 40px rgba(255,92,0,0.3); }
+  .logo-name { font-family:'Anton',sans-serif; font-size:46px; color:#fff; letter-spacing:5px; }
+  .logo-dot { color:#FF5C00; }
+  .logo-tag-line { font-family:'Inter',sans-serif; font-weight:600; font-size:12px; color:rgba(255,255,255,0.45); letter-spacing:3px; text-transform:uppercase; }
+
+  .replay-btn { position:absolute; top:18px; right:18px; z-index:10; background:rgba(0,0,0,0.5); border:1px solid rgba(255,92,0,0.6); color:#FF5C00; padding:7px 16px; border-radius:20px; font-family:'Inter',sans-serif; font-size:11px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; cursor:pointer; opacity:0; pointer-events:none; transition:opacity 0.3s; }
+  .replay-btn.visible { opacity:1; pointer-events:all; }
+  .progress-bar { position:absolute; bottom:0; left:0; z-index:10; height:2px; width:0%; background:linear-gradient(90deg,#FF5C00,#FF9500); transition:width linear; }
+</style>
+</head>
+<body>
+<div class="reel">
+  <video class="bg-video active" id="vid1" src="https://base44.app/api/apps/6a2863e67f8342fff155be60/files/mp/public/6a2863e67f8342fff155be60/7f3d48cce_ambiance1.mp4" autoplay muted loop playsinline preload="auto"></video>
+  <div class="bg-gradient"></div>
+
+  <!-- S1: Hook -->
+  <div class="slide" id="s1">
+    <div class="t-label fade" id="e1a">Real talk</div>
+    <div class="t-hero">
+      <div><span class="word-wrap"><span class="word" id="e1">Your food</span></span></div>
+      <div><span class="word-wrap"><span class="word" id="e2">software</span></span></div>
+      <div><span class="word-wrap"><span class="word accent" id="e3">is robbing you.</span></span></div>
+    </div>
+    <div class="bar"></div>
+  </div>
+
+  <!-- S2: The problem stat -->
+  <div class="slide" id="s2">
+    <div class="t-hero-sm">
+      <div><span class="word-wrap"><span class="word" id="e4">Most pizzerias</span></span></div>
+      <div><span class="word-wrap"><span class="word" id="e5">pay</span></span></div>
+    </div>
+    <div class="t-stat"><span class="word-wrap"><span class="word" id="e6">$300+</span></span></div>
+    <div class="t-sub fade" id="e7">Per month. For features they never use.</div>
+  </div>
+
+  <!-- S3: comparison -->
+  <div class="slide" id="s3">
+    <div class="t-hero-sm">
+      <div><span class="word-wrap"><span class="word" id="e8">Here's what</span></span></div>
+      <div><span class="word-wrap"><span class="word accent" id="e9">$300/mo</span></span></div>
+      <div><span class="word-wrap"><span class="word" id="e10">gets you.</span></span></div>
+    </div>
+    <div class="compare-card" id="e11">
+      <div class="compare-row"><span class="label">MarketMan</span><span class="bad">$349/mo</span></div>
+      <div class="compare-row"><span class="label">BlueCart</span><span class="bad">$299/mo</span></div>
+      <div class="compare-row"><span class="label">Restaurant365</span><span class="bad">$459/mo</span></div>
+    </div>
+  </div>
+
+  <!-- S4: the pivot -->
+  <div class="slide" id="s4">
+    <div class="t-hero-sm">
+      <div><span class="word-wrap"><span class="word" id="e12">Or you could</span></span></div>
+      <div><span class="word-wrap"><span class="word" id="e13">use</span></span></div>
+      <div><span class="word-wrap"><span class="word accent" id="e14">SliceCost.</span></span></div>
+    </div>
+    <div class="t-stat-green"><span class="word-wrap"><span class="word" id="e15">$19/mo</span></span></div>
+    <div class="t-sub fade" id="e16">Same features. No BS. No contracts.</div>
+    <div class="bar"></div>
+  </div>
+
+  <!-- S5: what you get -->
+  <div class="slide" id="s5">
+    <div class="t-label fade" id="e17a">Included at $19</div>
+    <div class="t-hero-sm">
+      <div><span class="word-wrap"><span class="word" id="e17">Everything</span></span></div>
+      <div><span class="word-wrap"><span class="word" id="e18">you actually</span></span></div>
+      <div><span class="word-wrap"><span class="word accent" id="e19">need.</span></span></div>
+    </div>
+    <div class="compare-card" id="e20">
+      <div class="compare-row"><span class="label">✅ Invoice scanning</span><span class="good">Included</span></div>
+      <div class="compare-row"><span class="label">✅ Price change alerts</span><span class="good">Included</span></div>
+      <div class="compare-row"><span class="label">✅ Recipe costing</span><span class="good">Included</span></div>
+    </div>
+  </div>
+
+  <!-- S6: urgency -->
+  <div class="slide" id="s6">
+    <div class="t-hero-sm">
+      <div><span class="word-wrap"><span class="word" id="e21">Only</span></span></div>
+      <div><span class="word-wrap"><span class="word accent" id="e22">100 spots</span></span></div>
+      <div><span class="word-wrap"><span class="word" id="e23">at $19.</span></span></div>
+    </div>
+    <div class="t-sub fade" id="e24" style="margin-top:14px">After that, price goes up. Forever.<br>Lock yours in — link in bio. 🔗</div>
+    <div class="bar"></div>
+  </div>
+
+  <div class="logo-screen" id="logoScreen">
+    <div class="logo-wrap">
+      <img src="https://media.base44.com/images/public/6a2863e67f8342fff155be60/5d7dca8e8_generated_image.png" alt="SliceCost">
+      <div class="logo-name">Slice<span class="logo-dot">Cost</span></div>
+      <div class="logo-tag-line">Know your margins. Keep your profits.</div>
+    </div>
+  </div>
+  <button class="replay-btn" id="replayBtn" onclick="startAnimation()">↺ Replay</button>
+  <div class="progress-bar" id="progress"></div>
+</div>
+<script>
+const TOTAL = 20000;
+const timeline = [
+  [0,    'slide','s1'],
+  [300,  'show', 'e1a'],
+  [600,  'show', 'e1'],
+  [950,  'show', 'e2'],
+  [1300, 'show', 'e3'],
+
+  [3000, 'slide','s2'],
+  [3200, 'show', 'e4'],
+  [3600, 'show', 'e5'],
+  [4000, 'show', 'e6'],
+  [4600, 'show', 'e7'],
+
+  [6200, 'slide','s3'],
+  [6400, 'show', 'e8'],
+  [6750, 'show', 'e9'],
+  [7100, 'show', 'e10'],
+  [7700, 'show', 'e11'],
+
+  [9400, 'slide','s4'],
+  [9600, 'show', 'e12'],
+  [9950, 'show', 'e13'],
+  [10250,'show', 'e14'],
+  [10700,'show', 'e15'],
+  [11200,'show', 'e16'],
+
+  [12800,'slide','s5'],
+  [13000,'show', 'e17a'],
+  [13200,'show', 'e17'],
+  [13550,'show', 'e18'],
+  [13900,'show', 'e19'],
+  [14400,'show', 'e20'],
+
+  [16000,'slide','s6'],
+  [16200,'show', 'e21'],
+  [16550,'show', 'e22'],
+  [16900,'show', 'e23'],
+  [17500,'show', 'e24'],
+
+  [19000,'logo', null],
+];
+
+let timers = [];
+function clearAll() {
+  timers.forEach(t => clearTimeout(t));
+  timers = [];
+  document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.word').forEach(w => w.classList.remove('show'));
+  document.querySelectorAll('.fade').forEach(w => w.classList.remove('show'));
+  document.querySelectorAll('.compare-card').forEach(w => w.classList.remove('show'));
+  document.getElementById('logoScreen').classList.remove('visible');
+  document.getElementById('replayBtn').classList.remove('visible');
+  const pb = document.getElementById('progress');
+  pb.style.transition = 'none'; pb.style.width = '0%';
+}
+function startAnimation() {
+  clearAll();
+  setTimeout(() => {
+    const pb = document.getElementById('progress');
+    pb.style.transition = `width ${TOTAL}ms linear`;
+    pb.style.width = '100%';
+  }, 50);
+  timeline.forEach(([t, type, id]) => {
+    timers.push(setTimeout(() => {
+      if (type === 'slide') {
+        document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+      } else if (type === 'logo') {
+        document.getElementById('logoScreen').classList.add('visible');
+        setTimeout(() => document.getElementById('replayBtn').classList.add('visible'), 1200);
+      } else {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('show');
+      }
+    }, t));
+  });
+}
+document.addEventListener('DOMContentLoaded', startAnimation);
+let touched = false;
+document.addEventListener('touchstart', () => {
+  if (!touched) { touched = true; document.querySelectorAll('.bg-video').forEach(v => v.play()); }
+}, { once: true });
+</script>
+</body>
+</html>
