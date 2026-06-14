@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SliceCost — Reels</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@600;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0a;
+    min-height: 100vh;
+    font-family: 'Montserrat', sans-serif;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 60px;
+  }
+
+  .logo-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 48px;
+  }
+  .logo-bar img {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+  }
+  .logo-bar span {
+    font-family: 'Anton', sans-serif;
+    font-size: 28px;
+    color: #FF5C00;
+    letter-spacing: 2px;
+  }
+
+  h1 {
+    font-family: 'Anton', sans-serif;
+    font-size: 38px;
+    letter-spacing: 2px;
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  .subtitle {
+    color: #888;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 48px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .reels-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    width: 100%;
+    max-width: 960px;
+  }
+
+  .reel-card {
+    background: #141414;
+    border: 1px solid #222;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  .reel-card:hover {
+    transform: translateY(-4px);
+    border-color: #FF5C00;
+  }
+
+  .reel-thumb {
+    width: 100%;
+    aspect-ratio: 9/16;
+    background: #1a1a1a;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .reel-thumb video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.6;
+  }
+
+  .reel-thumb-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 50%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 20px;
+  }
+
+  .play-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -60%);
+    width: 56px;
+    height: 56px;
+    background: rgba(255,92,0,0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+  .reel-card:hover .play-btn {
+    transform: translate(-50%, -60%) scale(1.1);
+    background: #FF5C00;
+  }
+  .play-btn svg {
+    width: 22px;
+    height: 22px;
+    fill: #fff;
+    margin-left: 3px;
+  }
+
+  .reel-number {
+    font-family: 'Anton', sans-serif;
+    font-size: 13px;
+    color: #FF5C00;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .reel-title {
+    font-family: 'Anton', sans-serif;
+    font-size: 22px;
+    color: #fff;
+    letter-spacing: 1px;
+    line-height: 1.2;
+  }
+
+  .reel-info {
+    padding: 18px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .reel-desc {
+    font-size: 13px;
+    color: #888;
+    line-height: 1.5;
+    flex: 1;
+  }
+  .open-link {
+    background: #FF5C00;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 8px 16px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    margin-left: 12px;
+    transition: background 0.2s;
+  }
+  .reel-card:hover .open-link {
+    background: #e04e00;
+  }
+
+  .back-link {
+    margin-top: 48px;
+    color: #555;
+    font-size: 13px;
+    text-decoration: none;
+    letter-spacing: 1px;
+    transition: color 0.2s;
+  }
+  .back-link:hover { color: #FF5C00; }
+</style>
+</head>
+<body>
+
+<div class="logo-bar">
+  <img src="https://media.base44.com/images/public/6a2863e67f8342fff155be60/5d7dca8e8_generated_image.png" alt="SliceCost">
+  <span>SLICECOST</span>
+</div>
+
+<h1>MARKETING REELS</h1>
+<p class="subtitle">Click any reel to watch · Screen record to post</p>
+
+<div class="reels-grid">
+
+  <a class="reel-card" href="reel1.html" target="_blank">
+    <div class="reel-thumb">
+      <video src="https://videos.pexels.com/video-files/9460723/9460723-hd_1080_1920_24fps.mp4" autoplay muted loop playsinline></video>
+      <div class="reel-thumb-overlay">
+        <div class="reel-number">Reel 01</div>
+        <div class="reel-title">You raised your prices.</div>
+      </div>
+      <div class="play-btn">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+    </div>
+    <div class="reel-info">
+      <div class="reel-desc">Cost awareness — mozzarella up 18%, your menu price? Same.</div>
+      <span class="open-link">Play</span>
+    </div>
+  </a>
+
+  <a class="reel-card" href="reel2.html" target="_blank">
+    <div class="reel-thumb">
+      <video src="https://videos.pexels.com/video-files/4252803/4252803-hd_1080_2048_25fps.mp4" autoplay muted loop playsinline></video>
+      <div class="reel-thumb-overlay">
+        <div class="reel-number">Reel 02</div>
+        <div class="reel-title">$350/mo for software?</div>
+      </div>
+      <div class="play-btn">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+    </div>
+    <div class="reel-info">
+      <div class="reel-desc">Price comparison — big software vs. $19/month founding member rate.</div>
+      <span class="open-link">Play</span>
+    </div>
+  </a>
+
+  <a class="reel-card" href="reel3.html" target="_blank">
+    <div class="reel-thumb">
+      <video src="https://videos.pexels.com/video-files/6603830/6603830-hd_1080_1920_25fps.mp4" autoplay muted loop playsinline></video>
+      <div class="reel-thumb-overlay">
+        <div class="reel-number">Reel 03</div>
+        <div class="reel-title">I was that owner.</div>
+      </div>
+      <div class="play-btn">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+    </div>
+    <div class="reel-info">
+      <div class="reel-desc">Founder story — built by a pizzeria owner, for pizzeria owners.</div>
+      <span class="open-link">Play</span>
+    </div>
+  </a>
+
+  <a class="reel-card" href="reel4.html" target="_blank">
+    <div class="reel-thumb">
+      <video src="https://videos.pexels.com/video-files/7247817/7247817-hd_1080_1920_30fps.mp4" autoplay muted loop playsinline></video>
+      <div class="reel-thumb-overlay">
+        <div class="reel-number">Reel 04</div>
+        <div class="reel-title">Your software is robbing you.</div>
+      </div>
+      <div class="play-btn">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+    </div>
+    <div class="reel-info">
+      <div class="reel-desc">Pain point — overpriced, bloated software bleeding your margins dry.</div>
+      <span class="open-link">Play</span>
+    </div>
+  </a>
+
+  <a class="reel-card" href="reel5.html" target="_blank">
+    <div class="reel-thumb">
+      <video src="https://videos.pexels.com/video-files/6698953/6698953-hd_1080_1920_25fps.mp4" autoplay muted loop playsinline></video>
+      <div class="reel-thumb-overlay">
+        <div class="reel-number">Reel 05</div>
+        <div class="reel-title">Set up in 5 minutes.</div>
+      </div>
+      <div class="play-btn">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+    </div>
+    <div class="reel-info">
+      <div class="reel-desc">Ease of use — no training, no setup fees, just works from day one.</div>
+      <span class="open-link">Play</span>
+    </div>
+  </a>
+
+</div>
+
+<a class="back-link" href="index.html">← Back to landing page</a>
+
+</body>
+</html>
