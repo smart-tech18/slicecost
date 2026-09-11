@@ -60,6 +60,11 @@
     .hero-form button { background: var(--orange); color: #fff; border: none; padding: 14px 28px; border-radius: 50px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; transition: background 0.2s; white-space: nowrap; }
     .hero-form button:hover { background: var(--orange-light); }
     .hero-form button:disabled { opacity: 0.6; cursor: not-allowed; }
+    .hero-cta { display: inline-block; background: var(--orange); color: #fff; padding: 16px 36px; border-radius: 50px; font-size: 16px; font-weight: 700; text-decoration: none; transition: background 0.2s; }
+    .hero-cta:hover { background: var(--orange-light); }
+    .waitlist-toggle { font-size: 13px; color: #888; margin-top: 14px; }
+    .waitlist-toggle a { color: var(--orange); font-weight: 600; text-decoration: none; }
+    .waitlist-toggle a:hover { text-decoration: underline; }
     .form-note { font-size: 13px; color: #999; text-align: center; margin-bottom: 40px; }
     .success-msg { display: none; background: #fff; border: 2px solid var(--orange); border-radius: 16px; padding: 20px 28px; margin: 0 auto 32px; max-width: 420px; text-align: center; }
     .success-msg .emo { font-size: 36px; display: block; margin-bottom: 8px; }
@@ -175,7 +180,7 @@
 
 <nav>
   <a class="logo" href="#">
-    <img src="https://media.base44.com/images/public/6a2863e67f8342fff155be60/5d7dca8e8_generated_image.png" alt="SliceCost">
+    <img src="https://media.base44.com/images/public/6a2863e67f8342fff155be60/23334006b_ChatGPTImageJul16202611_57_36PM.png" alt="SliceCost">
     Slice<span>Cost</span>
   </a>
   <ul class="nav-links">
@@ -190,17 +195,19 @@
   <div class="hero-badge"><span class="dot"></span> Now accepting founding members</div>
   <h1>Know What Every<br><span class="hl">Slice</span> Really Costs.</h1>
   <p class="sub">AI-powered food costing for pizzeria owners. Scan invoices, track ingredient prices, and finally know your real margins — in minutes. <strong>Start free for 7 days.</strong></p>
-  <form class="hero-form" id="waitlistForm" onsubmit="handleSubmit(event,'waitlistForm','successMsg')">
+  <a href="https://smart-pizza-math.base44.app" target="_blank" class="hero-cta">Start free 7-day trial →</a>
+  <p class="form-note">No credit card required · No spam · Cancel anytime</p>
+  <p class="waitlist-toggle">Not ready yet? <a href="#" class="waitlist-link">Join the waitlist</a></p>
+  <form class="hero-form" id="waitlistForm" style="display:none" onsubmit="handleSubmit(event,'waitlistForm','successMsg')">
     <input type="text" placeholder="Your name" required>
     <input type="email" placeholder="Your email" required>
-    <button type="submit">Claim My Spot →</button>
+    <button type="submit">Join Waitlist →</button>
   </form>
   <div class="success-msg" id="successMsg">
     <span class="emo">🎉</span>
     <strong>You're on the list!</strong>
     <p>We'll be in touch soon. Welcome to the founding members club.</p>
   </div>
-  <p class="form-note">No credit card required · No spam · Cancel anytime</p>
   <div class="spots-bar">🔥 <span id="spotsText"><strong>100 founding spots</strong> at $19/month — locked in forever</span></div>
 </section>
 
@@ -215,10 +222,11 @@
   <h2>Running blind on food costs<br>is killing your margins.</h2>
   <p>Most pizzeria owners are losing money on their best-selling items and have no idea. Ingredient prices change every week — your spreadsheet doesn't.</p>
   <div class="stats-row">
-    <div class="stat"><span class="num">68%</span><div class="desc">of restaurants fail in<br>the first 3 years</div></div>
-    <div class="stat"><span class="num">$350</span><div class="desc">average monthly cost<br>of existing software</div></div>
-    <div class="stat"><span class="num">18%</span><div class="desc">mozzarella price<br>increase last year</div></div>
+    <div class="stat"><span class="num">68%</span><div class="desc">of restaurants fail in<br>the first 3 years*</div></div>
+    <div class="stat"><span class="num">$350</span><div class="desc">typical monthly cost<br>of legacy software*</div></div>
+    <div class="stat"><span class="num">18%</span><div class="desc">mozzarella price increase<br>reported last year*</div></div>
   </div>
+  <p style="text-align:center;font-size:12px;color:#999;margin-top:18px">*Industry reports suggest these figures — actual numbers vary by region and supplier.</p>
 </section>
 
 <section class="how-section" id="how">
@@ -258,7 +266,7 @@
     <h2>Built By A Pizzeria Owner.</h2>
   </div>
   <div class="founder-card">
-    <p class="founder-quote">"I was losing money on my Margherita and had no idea. Mozzarella prices jumped 18%, but I hadn't updated my menu in two years. I built SliceCost because <strong>no pizzeria owner should be running blind on their food costs.</strong>"</p>
+    <p class="founder-quote">"I was losing money on my Margherita and had no idea. Mozzarella prices kept jumping year after year, but I hadn't updated my menu in two years. I built SliceCost because <strong>no pizzeria owner should be running blind on their food costs.</strong>"</p>
     <div class="founder-name">Simone</div>
     <div class="founder-title">Founder, SliceCost · Pizzeria Owner</div>
   </div>
@@ -281,7 +289,7 @@
         <li class="locked">Margin alerts</li>
         <li class="locked">Price trend tracking</li>
       </ul>
-      <a href="https://smart-pizza-math.base44.app" target="_blank" class="pricing-cta secondary">Start Free Trial</a>
+      <a href="https://smart-pizza-math.base44.app" target="_blank" class="pricing-cta primary">Start free 7-day trial</a>
     </div>
     <div class="pricing-card featured">
       <div class="pricing-badge">🔥 FOUNDING MEMBER</div>
@@ -296,7 +304,7 @@
         <li class="check">Price trend tracking</li>
         <li class="check">Priority support</li>
       </ul>
-      <a href="#waitlist" class="pricing-cta primary">Claim Founding Price →</a>
+      <a href="https://smart-pizza-math.base44.app" target="_blank" class="pricing-cta primary">Start free 7-day trial</a>
     </div>
     <div class="pricing-card">
       <div class="pricing-tier">Business</div>
@@ -309,7 +317,7 @@
         <li class="check">Supplier reordering</li>
         <li class="check">Team accounts</li>
       </ul>
-      <a href="#waitlist" class="pricing-cta secondary">Join Waitlist</a>
+      <a href="mailto:hello@slicecost.com" class="pricing-cta secondary">Questions? Email us</a>
     </div>
   </div>
 </section>
@@ -317,10 +325,12 @@
 <section class="final-cta">
   <h2>Stop Guessing.<br>Start <span>Knowing.</span></h2>
   <p>Start your 7-day free trial. No credit card needed. Lock in $19/month before it's gone.</p>
-  <form class="hero-form" id="waitlistForm2" onsubmit="handleSubmit(event,'waitlistForm2','successMsg2')" style="margin-bottom:16px">
+  <a href="https://smart-pizza-math.base44.app" target="_blank" class="hero-cta">Start free 7-day trial →</a>
+  <p class="waitlist-toggle" style="color:#777">Not ready yet? <a href="#" class="waitlist-link" style="color:var(--orange)">Join the waitlist</a></p>
+  <form class="hero-form" id="waitlistForm2" style="display:none;margin-bottom:16px" onsubmit="handleSubmit(event,'waitlistForm2','successMsg2')">
     <input type="text" placeholder="Your name" required>
     <input type="email" placeholder="Your email" required>
-    <button type="submit">Get Early Access →</button>
+    <button type="submit">Join Waitlist →</button>
   </form>
   <div class="success-msg" id="successMsg2" style="background:#1a1a1a;border-color:#FF5C00;">
     <span class="emo">🎉</span>
@@ -341,8 +351,19 @@ const API_URL = 'https://api.base44.com/api/apps/6a2863e67f8342fff155be60/functi
 document.querySelectorAll('a[href^="#"]').forEach(a => {
   a.addEventListener('click', e => {
     e.preventDefault();
-    const t = document.querySelector(a.getAttribute('href'));
-    if (t) t.scrollIntoView({ behavior: 'smooth' });
+    const href = a.getAttribute('href');
+    if (href.length > 1) {
+      const t = document.querySelector(href);
+      if (t) t.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+});
+
+document.querySelectorAll('.waitlist-link').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const form = link.closest('section').querySelector('form.hero-form');
+    if (form) { form.style.display = 'flex'; link.parentElement.style.display = 'none'; }
   });
 });
 
