@@ -62,9 +62,6 @@
     .hero-form button:disabled { opacity: 0.6; cursor: not-allowed; }
     .hero-cta { display: inline-block; background: var(--orange); color: #fff; padding: 16px 36px; border-radius: 50px; font-size: 16px; font-weight: 700; text-decoration: none; transition: background 0.2s; }
     .hero-cta:hover { background: var(--orange-light); }
-    .waitlist-toggle { font-size: 13px; color: #888; margin-top: 14px; }
-    .waitlist-toggle a { color: var(--orange); font-weight: 600; text-decoration: none; }
-    .waitlist-toggle a:hover { text-decoration: underline; }
     .form-note { font-size: 13px; color: #999; text-align: center; margin-bottom: 40px; }
     .success-msg { display: none; background: #fff; border: 2px solid var(--orange); border-radius: 16px; padding: 20px 28px; margin: 0 auto 32px; max-width: 420px; text-align: center; }
     .success-msg .emo { font-size: 36px; display: block; margin-bottom: 8px; }
@@ -191,23 +188,13 @@
   <a href="https://smart-pizza-math.base44.app" target="_blank" class="nav-cta">Start Free Trial</a>
 </nav>
 
-<section class="hero" id="waitlist">
+<section class="hero" id="start">
   <div class="hero-badge"><span class="dot"></span> Now accepting founding members</div>
   <h1>Know What Every<br><span class="hl">Slice</span> Really Costs.</h1>
   <p class="sub">AI-powered food costing for pizzeria owners. Scan invoices, track ingredient prices, and finally know your real margins — in minutes. <strong>Start free for 7 days.</strong></p>
   <a href="https://smart-pizza-math.base44.app" target="_blank" class="hero-cta">Start free 7-day trial →</a>
   <p class="form-note">No credit card required · No spam · Cancel anytime</p>
-  <p class="waitlist-toggle">Not ready yet? <a href="#" class="waitlist-link">Join the waitlist</a></p>
-  <form class="hero-form" id="waitlistForm" style="display:none" onsubmit="handleSubmit(event,'waitlistForm','successMsg')">
-    <input type="text" placeholder="Your name" required>
-    <input type="email" placeholder="Your email" required>
-    <button type="submit">Join Waitlist →</button>
-  </form>
-  <div class="success-msg" id="successMsg">
-    <span class="emo">🎉</span>
-    <strong>You're on the list!</strong>
-    <p>We'll be in touch soon. Welcome to the founding members club.</p>
-  </div>
+  
   <div class="spots-bar">🔥 <span id="spotsText"><strong>100 founding spots</strong> at $19/month — locked in forever</span></div>
 </section>
 
@@ -326,17 +313,7 @@
   <h2>Stop Guessing.<br>Start <span>Knowing.</span></h2>
   <p>Start your 7-day free trial. No credit card needed. Lock in $19/month before it's gone.</p>
   <a href="https://smart-pizza-math.base44.app" target="_blank" class="hero-cta">Start free 7-day trial →</a>
-  <p class="waitlist-toggle" style="color:#777">Not ready yet? <a href="#" class="waitlist-link" style="color:var(--orange)">Join the waitlist</a></p>
-  <form class="hero-form" id="waitlistForm2" style="display:none;margin-bottom:16px" onsubmit="handleSubmit(event,'waitlistForm2','successMsg2')">
-    <input type="text" placeholder="Your name" required>
-    <input type="email" placeholder="Your email" required>
-    <button type="submit">Join Waitlist →</button>
-  </form>
-  <div class="success-msg" id="successMsg2" style="background:#1a1a1a;border-color:#FF5C00;">
-    <span class="emo">🎉</span>
-    <strong>You're on the list!</strong>
-    <p style="color:#aaa">We'll be in touch soon. Welcome to the founding members club.</p>
-  </div>
+  
   <p class="form-note">No credit card required · No spam · Cancel anytime</p>
 </section>
 
@@ -346,8 +323,6 @@
 </footer>
 
 <script>
-const API_URL = 'https://api.base44.com/api/apps/6a2863e67f8342fff155be60/functions/joinWaitlist';
-
 document.querySelectorAll('a[href^="#"]').forEach(a => {
   a.addEventListener('click', e => {
     e.preventDefault();
@@ -359,36 +334,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   });
 });
 
-document.querySelectorAll('.waitlist-link').forEach(link => {
-  link.addEventListener('click', e => {
-    e.preventDefault();
-    const form = link.closest('section').querySelector('form.hero-form');
-    if (form) { form.style.display = 'flex'; link.parentElement.style.display = 'none'; }
-  });
-});
 
-async function handleSubmit(e, formId, msgId) {
-  e.preventDefault();
-  const form = document.getElementById(formId);
-  const name = form.querySelector('input[type="text"]').value.trim();
-  const email = form.querySelector('input[type="email"]').value.trim();
-  const btn = form.querySelector('button');
-  if (!name || !email) return;
-  btn.disabled = true;
-  btn.textContent = 'Saving your spot...';
-  try {
-    await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, source: 'landing_page', tier_interest: 'Founding Member $19' })
-    });
-  } catch(err) {}
-  form.style.display = 'none';
-  document.getElementById(msgId).style.display = 'block';
-  document.querySelectorAll('[id^="spotsText"]').forEach(el => {
-    el.innerHTML = '🔥 <strong>Spots filling up fast!</strong> Sign up now to lock in $19/month';
-  });
-}
 </script>
 </body>
 </html>
